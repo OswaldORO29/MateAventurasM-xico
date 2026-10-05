@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MateAventuras México</title>
+    <!-- Importando fuentes amigables para niños -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'rosa-mexicano': '#E4007C',
+                        'talavera': '#004B87',
+                        'cempasuchil': '#FFD700',
+                        'agave': '#4B8B3B'
+                    },
+                    fontFamily: {
+                        'kids': ['Fredoka One', 'cursive'],
+                        'body': ['Nunito', 'sans-serif']
+                    },
+                    animation: {
+                        'bounce-short': 'bounce 0.5s ease-in-out 2',
+                        'wiggle': 'wiggle 0.5s ease-in-out infinite',
+                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                    },
+                    keyframes: {
+                        wiggle: {
+                            '0%, 100%': { transform: 'rotate(-3deg)' },
+                            '50%': { transform: 'rotate(3deg)' },
+                        },
+                        shake: {
+                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #fdf6e3;
+            background-image: radial-gradient(#FFD700 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+        .game-card {
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 0 8px white inset;
+        }
+        .btn-answer {
+            transition: all 0.2s ease;
+            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
+        }
+        .btn-answer:active {
+            transform: translateY(6px);
+            box-shadow: 0 0 0 rgba(0,0,0,0.2);
+        }
+        
+        /* Sistema de confeti en CSS puro */
+        .confetti-piece {
+            position: absolute;
+            width: 10px;
+            height: 30px;
+            background: #ffd300;
+            top: -50px;
+            opacity: 0;
+            z-index: 50;
+        }
+        @keyframes fall {
+            0% { opacity: 1; top: -50px; transform: translateX(0) rotate(0deg); }
+            100% { opacity: 0; top: 100%; transform: translateX(100px) rotate(360deg); }
+        }
+    </style>
+</head>
+<body class="font-body min-h-screen flex flex-col items-center justify-between p-4 overflow-x-hidden relative">
+
+    <!-- Contenedor del Confeti -->
+    <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+
+    <header class="w-full max-w-2xl text-center pt-4 pb-2">
+        <h1 class="text-4xl md:text-6xl font-kids text-rosa-mexicano drop-shadow-md mb-2">
+            ¡MateAventuras! 🇲🇽
+        </h1>
+        <p class="text-talavera text-lg md:text-xl font-bold bg-white inline-block px-4 py-1 rounded-full border-2 border-talavera">
+            Aprende con Loti el Ajolote 🦎
+        </p>
+    </header>
+
+    <div class="w-full max-w-md flex justify-between items-center bg-white rounded-2xl p-4 shadow-md border-4 border-cempasuchil mb-4">
+        <div class="flex items-center gap-2">
+            <span class="text-3xl">⭐</span>
+            <div class="flex flex-col">
+                <span class="text-sm text-gray-500 font-bold uppercase">Puntos</span>
+                <span id="score-display" class="text-2xl font-kids text-talavera leading-none">0</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-2">
+            <div class="flex flex-col text-right">
+                <span class="text-sm text-gray-500 font-bold uppercase">Racha</span>
+                <span id="streak-display" class="text-2xl font-kids text-agave leading-none">0</span>
+            </div>
+            <span class="text-3xl">🔥</span>
+        </div>
+    </div>
+
+    <main class="w-full max-w-md bg-white game-card rounded-3xl p-6 md:p-8 text-center relative">
+        
+        <!-- Estado Inicial -->
+        <div id="start-screen" class="block">
+            <img src="https://placehold.co/150x150/E4007C/white?text=🦎" alt="Mascota Ajolote" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-cempasuchil animate-wiggle">
+            <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Hola! Vamos a jugar con los números.</h2>
+            <button onclick="startGame()" class="w-full bg-agave text-white font-kids text-2xl py-4 rounded-2xl btn-answer hover:bg-green-600">
+                ¡EMPEZAR AHORA! 🚀
+            </button>
+        </div>
+
+        <!-- Pantalla de Juego -->
+        <div id="game-screen" class="hidden">
+            <!-- Problema Matemático -->
+            <div class="bg-blue-50 rounded-2xl p-6 mb-6 border-2 border-blue-200">
+                <h2 id="equation" class="text-6xl md:text-7xl font-kids text-talavera tracking-widest">
+                    5 + 3 = ?
+                </h2>
+            </div>
+
+            <!-- Área de Feedback -->
+            <div id="feedback-message" class="h-10 text-xl font-bold mb-4 opacity-0 transition-opacity duration-300">
+                ¡Correcto! 🎉
+            </div>
+
+            <!-- Botones de Respuesta -->
+            <div id="options-container" class="grid grid-cols-2 gap-4">
+                <!-- Se llenan con JS -->
+            </div>
+        </div>
+    </main>
+
+    <footer class="w-full max-w-2xl mt-8 text-center bg-white p-4 rounded-xl shadow-sm border-2 border-gray-200">
+        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Desarrollado por el Equipo:</h3>
+        <div class="flex flex-wrap justify-center gap-4 text-sm md:text-base">
+            <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg font-semibold">
+                💻 Front-End: <span class="font-normal">Daniel Emanuel Saucedo</span>
+            </div>
+            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg font-semibold">
+                ⚙️ Back-End: <span class="font-normal">Dana Laura Zuazo</span>
+            </div>
+            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-lg font-semibold">
+                ⚙️ Back-End: <span class="font-normal">Oswaldo Rojas Ortis</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Variables de Estado
+        let score = 0;
+        let streak = 0;
+        let currentAnswer = 0;
+        let isProcessing = false;
+
+        // Elementos del DOM
+        const startScreen = document.getElementById('start-screen');
+        const gameScreen = document.getElementById('game-screen');
+        const equationDisplay = document.getElementById('equation');
+        const optionsContainer = document.getElementById('options-container');
+        const scoreDisplay = document.getElementById('score-display');
+        const streakDisplay = document.getElementById('streak-display');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const confettiContainer = document.getElementById('confetti-container');
+
+        // Paleta de colores para los botones
+        const buttonColors = [
+            'bg-rosa-mexicano',
+            'bg-talavera',
+            'bg-cempasuchil',
+            'bg-orange-500'
+        ];
+
+        function startGame() {
+            startScreen.classList.add('hidden');
+            gameScreen.classList.remove('hidden');
+            score = 0;
+            streak = 0;
+            updateScoreboard();
+            generateProblem();
+        }
+
+        function generateProblem() {
+            isProcessing = false;
+            // Generar números (Nivel básico: 1 a 15)
+            let num1 = Math.floor(Math.random() * 15) + 1;
+            let num2 = Math.floor(Math.random() * 10) + 1;
+            
+            // 50% probabilidad de suma o resta
+            const isAddition = Math.random() > 0.5;
+
+            if (!isAddition) {
+                // Evitar resultados negativos en nivel básico
+                if (num1 < num2) {
+                    let temp = num1;
+                    num1 = num2;
+                    num2 = temp;
+                }
+                currentAnswer = num1 - num2;
+                equationDisplay.innerText = `${num1} - ${num2} = ?`;
+            } else {
+                currentAnswer = num1 + num2;
+                equationDisplay.innerText = `${num1} + ${num2} = ?`;
+            }
+
+            generateOptions();
+        }
+
+        function generateOptions() {
+            // Generar 3 respuestas incorrectas cercanas a la correcta
+            let options = [currentAnswer];
+            
+            while (options.length < 4) {
+                // Generar variación aleatoria entre -3 y +3
+                let offset = Math.floor(Math.random() * 7) - 3;
+                let wrongAnswer = currentAnswer + offset;
+                
+                // Asegurar que no sea negativo ni igual a la correcta ni repetido
+                if (wrongAnswer >= 0 && wrongAnswer !== currentAnswer && !options.includes(wrongAnswer)) {
+                    options.push(wrongAnswer);
+                }
+            }
+
+            // Mezclar opciones (Fisher-Yates Shuffle)
+            for (let i = options.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [options[i], options[j]] = [options[j], options[i]];
+            }
+
+            // Renderizar botones
+            optionsContainer.innerHTML = '';
+            options.forEach((opt, index) => {
+                const btn = document.createElement('button');
+                // Asignar colores diferentes pero consistentes
+                const colorClass = buttonColors[index % buttonColors.length];
+                
+                btn.className = `${colorClass} text-white font-kids text-4xl py-6 rounded-2xl btn-answer w-full`;
+                btn.innerText = opt;
+                btn.onclick = () => checkAnswer(opt, btn);
+                optionsContainer.appendChild(btn);
+            });
+        }
+
+        function checkAnswer(selected, btnElement) {
+            if (isProcessing) return; // Evitar multiples clics
+            isProcessing = true;
+
+            if (selected === currentAnswer) {
+                // Respuesta Correcta
+                score += 10;
+                streak++;
+                btnElement.classList.add('bg-agave'); // Cambiar a verde
+                btnElement.classList.remove(...buttonColors);
+                
+                showFeedback(true);
+                createConfetti();
+                updateScoreboard();
+
+                // Siguiente pregunta con retraso
+                setTimeout(() => {
+                    generateProblem();
+                }, 1500);
+
+            } else {
+                // Respuesta Incorrecta
+                streak = 0;
+                btnElement.classList.add('animate-shake', 'opacity-50');
+                
+                showFeedback(false);
+                updateScoreboard();
+
+                // Permitir intentar de nuevo después de la animación
+                setTimeout(() => {
+                    btnElement.classList.remove('animate-shake');
+                    isProcessing = false;
+                }, 800);
+            }
+        }
+
+        function showFeedback(isCorrect) {
+            feedbackMessage.style.opacity = '1';
+            
+            if (isCorrect) {
+                const praises = ['¡Órale, muy bien! 🎉', '¡Excelente! ⭐', '¡Qué inteligente! 🌮', '¡Súper! 🚀'];
+                const randomPraise = praises[Math.floor(Math.random() * praises.length)];
+                feedbackMessage.innerText = randomPraise;
+                feedbackMessage.className = 'h-10 text-xl md:text-2xl font-kids text-agave mb-4 transition-opacity duration-300';
+            } else {
+                feedbackMessage.innerText = '¡Uy! Intenta de nuevo 🌵';
+                feedbackMessage.className = 'h-10 text-xl md:text-2xl font-kids text-red-500 mb-4 transition-opacity duration-300';
+            }
+
+            if(isCorrect){
+                setTimeout(() => {
+                    feedbackMessage.style.opacity = '0';
+                }, 1200);
+            }
+        }
+
+        function updateScoreboard() {
+            scoreDisplay.innerText = score;
+            streakDisplay.innerText = streak;
+            
+            // Animación de puntaje
+            scoreDisplay.classList.remove('animate-bounce-short');
+            void scoreDisplay.offsetWidth; // Trigger reflow
+            scoreDisplay.classList.add('animate-bounce-short');
+        }
+
+        function createConfetti() {
+            const colors = ['#E4007C', '#004B87', '#FFD700', '#4B8B3B', '#FFFFFF'];
+            
+            for (let i = 0; i < 30; i++) {
+                let confetti = document.createElement('div');
+                confetti.className = 'confetti-piece';
+                
+                // Estilos aleatorios
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.animation = `fall ${Math.random() * 1 + 1}s linear forwards`;
+                
+                // Formas aleatorias (cuadrados y círculos)
+                if(Math.random() > 0.5) {
+                    confetti.style.borderRadius = '50%';
+                }
+
+                confettiContainer.appendChild(confetti);
+
+                // Limpiar DOM después de la animación
+                setTimeout(() => {
+                    confetti.remove();
+                }, 2000);
+            }
+        }
+    </script>
+</body>
+</html>
