@@ -3,343 +3,739 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MateAventuras México</title>
-    <!-- Importando fuentes amigables para niños -->
-    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700;900&family=Fredoka+One&display=swap" rel="stylesheet">
+    <title>MateAventuras Pro • Primaria a Preparatoria</title>
+    <!-- Tipografías limpias y legibles para todas las edades -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
-                    colors: {
-                        'rosa-mexicano': '#E4007C',
-                        'talavera': '#004B87',
-                        'cempasuchil': '#FFD700',
-                        'agave': '#4B8B3B'
-                    },
                     fontFamily: {
-                        'kids': ['Fredoka One', 'cursive'],
-                        'body': ['Nunito', 'sans-serif']
+                        'display': ['Fredoka', 'sans-serif'],
+                        'sans': ['Plus Jakarta Sans', '-apple-system', 'BlinkMacSystemFont', 'sans-serif'],
+                        'mono': ['JetBrains Mono', 'monospace']
                     },
                     animation: {
-                        'bounce-short': 'bounce 0.5s ease-in-out 2',
-                        'wiggle': 'wiggle 0.5s ease-in-out infinite',
-                        'shake': 'shake 0.5s cubic-bezier(.36,.07,.19,.97) both',
+                        'float': 'float 6s ease-in-out infinite',
+                        'float-delayed': 'float 7s ease-in-out 2s infinite',
+                        'bounce-short': 'bounceShort 0.45s cubic-bezier(0.34, 1.56, 0.64, 1)',
+                        'shake': 'shake 0.45s cubic-bezier(.36,.07,.19,.97) both',
+                        'pop-in': 'popIn 0.32s cubic-bezier(0.34, 1.56, 0.64, 1) forwards',
                     },
                     keyframes: {
-                        wiggle: {
-                            '0%, 100%': { transform: 'rotate(-3deg)' },
-                            '50%': { transform: 'rotate(3deg)' },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px) scale(1)' },
+                            '50%': { transform: 'translateY(-10px) scale(1.03)' },
+                        },
+                        bounceShort: {
+                            '0%, 100%': { transform: 'scale(1)' },
+                            '50%': { transform: 'scale(1.14)' },
                         },
                         shake: {
-                            '10%, 90%': { transform: 'translate3d(-1px, 0, 0)' },
-                            '20%, 80%': { transform: 'translate3d(2px, 0, 0)' },
-                            '30%, 50%, 70%': { transform: 'translate3d(-4px, 0, 0)' },
-                            '40%, 60%': { transform: 'translate3d(4px, 0, 0)' }
+                            '10%, 90%': { transform: 'translate3d(-2px, 0, 0)' },
+                            '20%, 80%': { transform: 'translate3d(4px, 0, 0)' },
+                            '30%, 50%, 70%': { transform: 'translate3d(-6px, 0, 0)' },
+                            '40%, 60%': { transform: 'translate3d(6px, 0, 0)' }
+                        },
+                        popIn: {
+                            '0%': { opacity: '0', transform: 'scale(0.94) translateY(8px)' },
+                            '100%': { opacity: '1', transform: 'scale(1) translateY(0)' }
                         }
                     }
                 }
             }
         }
     </script>
-    <style>
-        body {
-            background-color: #fdf6e3;
-            background-image: radial-gradient(#FFD700 1px, transparent 1px);
-            background-size: 20px 20px;
-        }
-        .game-card {
-            box-shadow: 0 10px 25px rgba(0,0,0,0.1), 0 0 0 8px white inset;
-        }
-        .btn-answer {
-            transition: all 0.2s ease;
-            box-shadow: 0 6px 0 rgba(0,0,0,0.2);
-        }
-        .btn-answer:active {
-            transform: translateY(6px);
-            box-shadow: 0 0 0 rgba(0,0,0,0.2);
-        }
-        
-        /* Sistema de confeti en CSS puro */
-        .confetti-piece {
-            position: absolute;
-            width: 10px;
-            height: 30px;
-            background: #ffd300;
-            top: -50px;
-            opacity: 0;
-            z-index: 50;
-        }
-        @keyframes fall {
-            0% { opacity: 1; top: -50px; transform: translateX(0) rotate(0deg); }
-            100% { opacity: 0; top: 100%; transform: translateX(100px) rotate(360deg); }
-        }
-    </style>
+    <link rel="stylesheet" href="./src/styles/main.css">
 </head>
-<body class="font-body min-h-screen flex flex-col items-center justify-between p-4 overflow-x-hidden relative">
+<body id="app-body" class="wallpaper-night theme-night dark font-sans min-h-screen flex flex-col items-center justify-between p-3 sm:p-5 overflow-x-hidden relative transition-colors duration-500">
 
-    <!-- Contenedor del Confeti -->
-    <div id="confetti-container" class="absolute inset-0 pointer-events-none overflow-hidden"></div>
+    <!-- Orbes ambientales iOS 16 -->
+    <div class="ambient-orb w-72 h-72 bg-indigo-500 -top-16 -left-16 animate-float"></div>
+    <div class="ambient-orb w-80 h-80 bg-pink-500 top-1/3 -right-20 animate-float-delayed"></div>
+    <div class="ambient-orb w-64 h-64 bg-sky-400 -bottom-16 left-1/4 animate-float"></div>
 
-    <header class="w-full max-w-2xl text-center pt-4 pb-2">
-        <h1 class="text-4xl md:text-6xl font-kids text-rosa-mexicano drop-shadow-md mb-2">
-            ¡MateAventuras! 🇲🇽
-        </h1>
-        <p class="text-talavera text-lg md:text-xl font-bold bg-white inline-block px-4 py-1 rounded-full border-2 border-talavera">
-            Aprende con Loti el Ajolote 🦎
-        </p>
-    </header>
+    <!-- Contenedor de Confeti -->
+    <canvas id="confetti-canvas" class="fixed inset-0 pointer-events-none z-50" aria-hidden="true" hidden></canvas>
 
-    <div class="w-full max-w-md flex justify-between items-center bg-white rounded-2xl p-4 shadow-md border-4 border-cempasuchil mb-4">
-        <div class="flex items-center gap-2">
-            <span class="text-3xl">⭐</span>
-            <div class="flex flex-col">
-                <span class="text-sm text-gray-500 font-bold uppercase">Puntos</span>
-                <span id="score-display" class="text-2xl font-kids text-talavera leading-none">0</span>
-            </div>
-        </div>
-        <div class="flex items-center gap-2">
-            <div class="flex flex-col text-right">
-                <span class="text-sm text-gray-500 font-bold uppercase">Racha</span>
-                <span id="streak-display" class="text-2xl font-kids text-agave leading-none">0</span>
-            </div>
-            <span class="text-3xl">🔥</span>
+    <!-- Toast de Notificación (Sin alert/confirm) -->
+    <div id="toast-notification" class="fixed top-20 left-1/2 -translate-x-1/2 z-50 pointer-events-none opacity-0 transition-all duration-300 transform -translate-y-3">
+        <div class="dynamic-island px-5 py-2.5 rounded-full flex items-center gap-2.5 text-sm font-bold shadow-2xl border border-white/25">
+            <span id="toast-icon">✨</span>
+            <span id="toast-text">Guardado correctamente</span>
         </div>
     </div>
 
-    <main class="w-full max-w-md bg-white game-card rounded-3xl p-6 md:p-8 text-center relative">
-        
-        <!-- Estado Inicial -->
-        <div id="start-screen" class="block">
-            <img src="https://placehold.co/150x150/E4007C/white?text=🦎" alt="Mascota Ajolote" class="w-32 h-32 rounded-full mx-auto mb-4 border-4 border-cempasuchil animate-wiggle">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">¡Hola! Vamos a jugar con los números.</h2>
-            <button onclick="startGame()" class="w-full bg-agave text-white font-kids text-2xl py-4 rounded-2xl btn-answer hover:bg-green-600">
-                ¡EMPEZAR AHORA! 🚀
+    <!-- ==========================================================================
+         BARRA DE ESTADO SUPERIOR Y NAVEGACIÓN PRINCIPAL (Principios #1, #8, #9)
+         ========================================================================== -->
+    <header class="w-full max-w-6xl z-20 flex flex-col gap-3">
+        <div class="flex flex-wrap items-center justify-between gap-2.5">
+            <!-- Marca + Botón de Inicio -->
+            <button onclick="switchMainTab('grades')" class="ios-glass px-3.5 py-2 rounded-full flex items-center gap-2.5 ios-btn text-left">
+                <div class="w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white font-display font-bold text-lg shadow">
+                    ∑
+                </div>
+                <div>
+                    <h1 class="font-display text-base sm:text-lg font-bold tracking-tight leading-none bg-gradient-to-r from-sky-400 via-fuchsia-400 to-amber-300 bg-clip-text text-transparent">
+                        MateAventuras Pro
+                    </h1>
+                    <span class="text-[11px] font-semibold opacity-75 block">1° Primaria a Preparatoria</span>
+                </div>
             </button>
+
+            <!-- Dynamic Island: Perfil, Monedas, Puntos XP y Racha -->
+            <div class="dynamic-island px-3.5 py-1.5 rounded-full flex items-center gap-3 sm:gap-4 text-xs sm:text-sm font-semibold">
+                <!-- Mini Avatar + Usuario -->
+                <button onclick="openAuthModal()" class="flex items-center gap-2 hover:opacity-90 transition-opacity pr-1" title="Cambiar cuenta o editar perfil">
+                    <div id="header-avatar-mini" class="w-8 h-8 rounded-full bg-slate-800 border border-white/30 overflow-hidden flex items-center justify-center shrink-0">
+                        <!-- Renderizado por JS -->
+                    </div>
+                    <div class="text-left hidden sm:block">
+                        <span id="header-username" class="font-bold text-white block leading-tight text-xs">Estudiante</span>
+                        <span id="header-auth-status" class="text-[10px] text-emerald-400 block leading-tight">En línea • Cambiar</span>
+                    </div>
+                </button>
+
+                <div class="h-4 w-[1px] bg-white/20"></div>
+
+                <!-- Monedas para Tienda de Avatar -->
+                <button onclick="switchMainTab('avatar')" class="flex items-center gap-1.5 hover:scale-105 transition-transform" title="Monedas para comprar accesorios">
+                    <span class="text-base">🪙</span>
+                    <span id="coins-display" class="font-display text-sm sm:text-base text-amber-300 font-bold">120</span>
+                </button>
+
+                <div class="h-4 w-[1px] bg-white/20"></div>
+
+                <!-- Puntos XP -->
+                <div class="flex items-center gap-1.5" title="Puntos de experiencia acumulados">
+                    <span class="text-base">⭐</span>
+                    <span id="score-display" class="font-display text-sm sm:text-base text-white font-bold">0</span>
+                </div>
+
+                <div class="h-4 w-[1px] bg-white/20 hidden md:block"></div>
+
+                <!-- Racha -->
+                <div class="hidden md:flex items-center gap-1.5" title="Racha de respuestas correctas">
+                    <span class="text-base">🔥</span>
+                    <span id="streak-display" class="font-display text-sm sm:text-base text-emerald-400 font-bold">0</span>
+                </div>
+            </div>
+
+            <!-- Controles Rápidos: Sonido, Tema iOS y Principios UX -->
+            <div class="flex items-center gap-2">
+                <button onclick="toggleSound()" class="ios-glass w-9 h-9 sm:w-10 sm:h-10 rounded-full flex items-center justify-center ios-btn" title="Sonido" aria-label="Sonido">
+                    <span id="sound-icon" class="text-base">🔊</span>
+                </button>
+                <button onclick="cycleWallpaper()" class="ios-glass px-3 h-9 sm:h-10 rounded-full flex items-center gap-1.5 ios-btn text-xs font-bold" title="Cambiar ambiente Cristal iOS 16">
+                    <span>🎨</span>
+                    <span id="theme-label" class="hidden lg:inline">Noche iOS</span>
+                </button>
+                <button onclick="openAuthModal()" class="ios-glass px-3 h-9 sm:h-10 rounded-full flex items-center gap-1.5 ios-btn text-xs font-bold" title="Iniciar sesión o cambiar perfil">
+                    <span>👤</span>
+                    <span class="hidden md:inline">Cuenta</span>
+                </button>
+            </div>
         </div>
 
-        <!-- Pantalla de Juego -->
-        <div id="game-screen" class="hidden">
-            <!-- Problema Matemático -->
-            <div class="bg-blue-50 rounded-2xl p-6 mb-6 border-2 border-blue-200">
-                <h2 id="equation" class="text-6xl md:text-7xl font-kids text-talavera tracking-widest">
-                    5 + 3 = ?
-                </h2>
+        <!-- Barra de Pestañas de Navegación (Principio #1 No me hagas pensar) -->
+        <nav class="ios-glass p-1.5 rounded-2xl flex flex-wrap items-center justify-between gap-1.5">
+            <button id="tab-btn-grades" onclick="switchMainTab('grades')" class="flex-1 min-w-[130px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow">
+                <span>📚</span>
+                <span>Grados y Exámenes</span>
+            </button>
+            <button id="tab-btn-daily" onclick="switchMainTab('daily')" class="flex-1 min-w-[130px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:bg-white/10">
+                <span>⚡</span>
+                <span>Reto Diario</span>
+                <span class="text-[10px] px-2 py-0.5 rounded-full bg-amber-400/20 text-amber-300 border border-amber-400/40 font-extrabold">+300 🪙</span>
+            </button>
+            <button id="tab-btn-avatar" onclick="switchMainTab('avatar')" class="flex-1 min-w-[130px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:bg-white/10">
+                <span>🎨</span>
+                <span>Avatar y Tienda</span>
+            </button>
+            <button id="tab-btn-mistakes" onclick="switchMainTab('mistakes')" class="flex-1 min-w-[130px] py-2.5 px-3 rounded-xl font-bold text-xs sm:text-sm flex items-center justify-center gap-2 transition-all hover:bg-white/10">
+                <span>🔄</span>
+                <span>Repaso de Errores</span>
+                <span id="mistakes-badge-count" class="text-[11px] px-2 py-0.5 rounded-full bg-rose-500 text-white font-extrabold">0</span>
+            </button>
+        </nav>
+    </header>
+
+    <!-- ==========================================================================
+         CONTENIDO PRINCIPAL
+         ========================================================================== -->
+    <main class="w-full max-w-6xl my-auto py-4 z-10 flex flex-col items-center">
+
+        <!-- ======================================================================
+             VISTA 1: SELECCIÓN DE GRADOS (1° PRIMARIA A 3° PREPARATORIA)
+             ====================================================================== -->
+        <section id="view-grades" class="w-full flex flex-col gap-5 animate-pop-in">
+            <!-- Banner de Bienvenida con Avatar Personalizado y Resumen -->
+            <div class="ios-glass rounded-[28px] p-5 sm:p-6 flex flex-col md:flex-row items-center justify-between gap-5">
+                <div class="flex flex-col sm:flex-row items-center gap-4 text-center sm:text-left">
+                    <!-- Vista previa del Avatar del Usuario -->
+                    <div onclick="switchMainTab('avatar')" class="cursor-pointer group relative w-24 h-28 rounded-3xl ios-glass-strong flex items-center justify-center p-1.5 shadow-inner shrink-0" title="Haz clic para personalizar tu avatar">
+                        <div id="hero-avatar-box" class="w-full h-full"></div>
+                        <span class="absolute -bottom-2 bg-indigo-600 text-white text-[10px] font-bold px-2.5 py-0.5 rounded-full shadow group-hover:scale-105 transition-transform">
+                            ✏️ Editar Avatar
+                        </span>
+                    </div>
+                    <div>
+                        <div class="flex flex-wrap items-center justify-center sm:justify-start gap-2 mb-1.5">
+                            <span class="text-xs font-extrabold uppercase tracking-wider px-3 py-0.5 rounded-full bg-indigo-500/20 text-indigo-300 border border-indigo-400/30">
+                                🎓 Currículo Completo SEP / Bachillerato
+                            </span>
+                            <span id="completed-exams-pill" class="text-xs font-bold px-3 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-400/30">
+                                🏆 0/12 Exámenes Aprobados
+                            </span>
+                        </div>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold leading-tight">
+                            ¡Hola, <span id="welcome-username" class="text-sky-400">Estudiante</span>! Elige tu nivel
+                        </h2>
+                        <p class="text-xs sm:text-sm opacity-80 mt-1 max-w-2xl">
+                            Practica con <strong>📐 Formulario</strong> y <strong>📘 Ejemplos paso a paso</strong> en cada ejercicio, o presenta el <strong>🎓 Mini Examen del Grado</strong> para ganar monedas y desbloquear ropa, tenis, huaraches y mochilas.
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Filtros por Etapa Educativa -->
+                <div class="flex flex-wrap justify-center gap-1.5 ios-glass-strong p-1.5 rounded-2xl shrink-0">
+                    <button onclick="filterGradesByStage('all')" id="stage-filter-all" class="stage-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white">
+                        Todos (12)
+                    </button>
+                    <button onclick="filterGradesByStage('primaria')" id="stage-filter-primaria" class="stage-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold opacity-80 hover:opacity-100">
+                        Primaria (1°-6°)
+                    </button>
+                    <button onclick="filterGradesByStage('secundaria')" id="stage-filter-secundaria" class="stage-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold opacity-80 hover:opacity-100">
+                        Secundaria (1°-3°)
+                    </button>
+                    <button onclick="filterGradesByStage('prepa')" id="stage-filter-prepa" class="stage-filter-btn px-3 py-1.5 rounded-xl text-xs font-bold opacity-80 hover:opacity-100">
+                        Preparatoria (1°-3°)
+                    </button>
+                </div>
             </div>
 
-            <!-- Área de Feedback -->
-            <div id="feedback-message" class="h-10 text-xl font-bold mb-4 opacity-0 transition-opacity duration-300">
-                ¡Correcto! 🎉
+            <!-- Cuadrícula de los 12 Grados Académicos -->
+            <div id="grades-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- Generado dinámicamente por JS -->
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             VISTA 2: RETO DIARIO CON SELECTOR DE DIFICULTAD (BÁSICO, MEDIO, DIFÍCIL)
+             ====================================================================== -->
+        <section id="view-daily" class="w-full max-w-4xl hidden flex-col gap-5 animate-pop-in">
+            <div class="ios-glass rounded-[32px] p-6 sm:p-8">
+                <div class="text-center max-w-2xl mx-auto mb-6">
+                    <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider px-3.5 py-1 rounded-full bg-amber-500/20 text-amber-300 border border-amber-400/30 mb-2">
+                        ⚡ Misión Especial de Hoy • Recompensas Multiplicadas
+                    </span>
+                    <h2 class="font-display text-3xl sm:text-4xl font-bold mb-2">
+                        Reto Diario de Matemáticas
+                    </h2>
+                    <p class="text-sm sm:text-base opacity-85">
+                        Tú eliges la dificultad del reto. Mientras mayor sea el nivel de dificultad, más <strong>Monedas 🪙</strong> y <strong>Puntos XP ⭐</strong> ganarás para personalizar tu avatar.
+                    </p>
+                </div>
+
+                <!-- Tarjetas de Selección de Dificultad -->
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+                    <!-- Básico -->
+                    <div class="ios-glass-strong rounded-3xl p-5 flex flex-col justify-between border-2 border-emerald-400/40">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-500/20 text-emerald-300">🟢 NIVEL BÁSICO</span>
+                                <span id="daily-status-basico" class="text-xs font-bold opacity-75">Disponible</span>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold mb-1">Aritmética y Bases</h3>
+                            <p class="text-xs opacity-80 mb-4">
+                                Operaciones fundamentales, fracciones básicas, porcentajes y perímetros (Nivel Primaria).
+                            </p>
+                            <div class="ios-glass rounded-2xl p-3 mb-4 space-y-1.5 text-xs font-bold">
+                                <div class="flex justify-between"><span>Recompensa Monedas:</span><span class="text-amber-400">+60 🪙</span></div>
+                                <div class="flex justify-between"><span>Experiencia XP:</span><span class="text-sky-400">+100 ⭐</span></div>
+                                <div class="flex justify-between"><span>Preguntas:</span><span>5 retos</span></div>
+                            </div>
+                        </div>
+                        <button onclick="startDailyChallenge('basico')" class="w-full py-3 rounded-2xl font-display font-bold text-base bg-gradient-to-r from-emerald-500 to-teal-600 text-white ios-btn shadow-lg">
+                            Iniciar Básico (+60 🪙)
+                        </button>
+                    </div>
+
+                    <!-- Medio -->
+                    <div class="ios-glass-strong rounded-3xl p-5 flex flex-col justify-between border-2 border-amber-400/50">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-amber-500/20 text-amber-300">🟡 NIVEL MEDIO</span>
+                                <span id="daily-status-medio" class="text-xs font-bold opacity-75">Disponible</span>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold mb-1">Álgebra y Geometría</h3>
+                            <p class="text-xs opacity-80 mb-4">
+                                Ecuaciones lineales, leyes de exponentes, Teorema de Pitágoras, cuadráticas y pendiente (Secundaria / Prepa 1).
+                            </p>
+                            <div class="ios-glass rounded-2xl p-3 mb-4 space-y-1.5 text-xs font-bold">
+                                <div class="flex justify-between"><span>Recompensa Monedas:</span><span class="text-amber-400">+150 🪙</span></div>
+                                <div class="flex justify-between"><span>Experiencia XP:</span><span class="text-sky-400">+250 ⭐</span></div>
+                                <div class="flex justify-between"><span>Preguntas:</span><span>5 retos</span></div>
+                            </div>
+                        </div>
+                        <button onclick="startDailyChallenge('medio')" class="w-full py-3 rounded-2xl font-display font-bold text-base bg-gradient-to-r from-amber-500 to-orange-600 text-white ios-btn shadow-lg">
+                            Iniciar Medio (+150 🪙)
+                        </button>
+                    </div>
+
+                    <!-- Difícil -->
+                    <div class="ios-glass-strong rounded-3xl p-5 flex flex-col justify-between border-2 border-rose-500/50">
+                        <div>
+                            <div class="flex items-center justify-between mb-3">
+                                <span class="px-3 py-1 rounded-full text-xs font-extrabold bg-rose-500/20 text-rose-300">🔴 NIVEL DIFÍCIL</span>
+                                <span id="daily-status-dificil" class="text-xs font-bold opacity-75">Disponible</span>
+                            </div>
+                            <h3 class="font-display text-2xl font-bold mb-1">Prepa: Matrices y Cálculo</h3>
+                            <p class="text-xs opacity-80 mb-4">
+                                Trigonometría, determinantes y álgebra de <strong>Matrices 2×2</strong>, derivadas y <strong>Límites Trigonométricos</strong>.
+                            </p>
+                            <div class="ios-glass rounded-2xl p-3 mb-4 space-y-1.5 text-xs font-bold">
+                                <div class="flex justify-between"><span>Recompensa Monedas:</span><span class="text-amber-400">+300 🪙</span></div>
+                                <div class="flex justify-between"><span>Experiencia XP:</span><span class="text-sky-400">+500 ⭐</span></div>
+                                <div class="flex justify-between"><span>Preguntas:</span><span>5 retos</span></div>
+                            </div>
+                        </div>
+                        <button onclick="startDailyChallenge('dificil')" class="w-full py-3 rounded-2xl font-display font-bold text-base bg-gradient-to-r from-rose-500 via-pink-600 to-purple-600 text-white ios-btn shadow-lg">
+                            Iniciar Difícil (+300 🪙)
+                        </button>
+                    </div>
+                </div>
+
+                <div class="ios-glass rounded-2xl p-4 flex flex-wrap items-center justify-between gap-3 text-xs sm:text-sm">
+                    <div class="flex items-center gap-2">
+                        <span class="text-lg">📐</span>
+                        <span>Durante el Reto Diario tienes acceso completo al <strong>Formulario Matemático</strong> y a los <strong>Ejemplos Resueltos</strong>.</span>
+                    </div>
+                    <button onclick="openFormulaModal('all')" class="ios-glass-strong px-4 py-2 rounded-xl font-bold ios-btn">
+                        Ver Formulario General
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             VISTA 3: CREADOR DE AVATAR Y TIENDA DE ACCESORIOS (CON MONEDAS 🪙)
+             ====================================================================== -->
+        <section id="view-avatar" class="w-full hidden flex-col lg:flex-row gap-5 animate-pop-in">
+            <!-- Columna Izquierda: Vista Previa del Personaje SVG en Vivo -->
+            <div class="w-full lg:w-5/12 ios-glass rounded-[32px] p-6 flex flex-col items-center justify-between">
+                <div class="w-full flex items-center justify-between mb-3">
+                    <div>
+                        <span class="text-xs font-extrabold uppercase tracking-wider text-pink-400">Estudio de Personaje</span>
+                        <h2 id="avatar-studio-name" class="font-display text-2xl font-bold">Tu Avatar</h2>
+                    </div>
+                    <div class="dynamic-island px-3.5 py-1.5 rounded-full flex items-center gap-1.5 text-sm font-bold">
+                        <span>🪙</span>
+                        <span id="shop-coins-balance" class="text-amber-300">120</span>
+                    </div>
+                </div>
+
+                <!-- Escenario de Cristal del Avatar -->
+                <div class="w-full max-w-[270px] aspect-[4/5] rounded-[28px] ios-glass-strong flex items-center justify-center p-4 my-2 relative shadow-inner border border-white/30">
+                    <div id="avatar-large-preview" class="w-full h-full flex items-center justify-center">
+                        <!-- SVG de cuerpo completo inyectado dinámicamente -->
+                    </div>
+                </div>
+
+                <!-- Acciones de Avatar -->
+                <div class="w-full flex flex-wrap gap-2.5 mt-4">
+                    <button onclick="randomizeAvatar()" class="flex-1 ios-glass-strong py-2.5 px-4 rounded-2xl font-bold text-xs sm:text-sm ios-btn flex items-center justify-center gap-1.5">
+                        <span>🎲</span>
+                        <span>Estilo Aleatorio</span>
+                    </button>
+                    <button onclick="saveUserProfileToCloud(true)" class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-2.5 px-4 rounded-2xl font-bold text-xs sm:text-sm ios-btn flex items-center justify-center gap-1.5 shadow-lg">
+                        <span>💾</span>
+                        <span>Guardar Estilo</span>
+                    </button>
+                </div>
             </div>
 
-            <!-- Botones de Respuesta -->
-            <div id="options-container" class="grid grid-cols-2 gap-4">
-                <!-- Se llenan con JS -->
+            <!-- Columna Derecha: Categorías de Personalización y Tienda -->
+            <div class="w-full lg:w-7/12 ios-glass rounded-[32px] p-5 sm:p-6 flex flex-col justify-between">
+                <div>
+                    <div class="flex flex-wrap items-center justify-between gap-2 mb-4">
+                        <h3 class="font-display text-xl sm:text-2xl font-bold">Personaliza y Compra Accesorios</h3>
+                        <span class="text-xs font-semibold opacity-75">Gana 🪙 en Retos Diarios y Mini Exámenes</span>
+                    </div>
+
+                    <!-- Pestañas de Categorías del Avatar -->
+                    <div class="flex flex-wrap gap-1.5 mb-4 pb-2 border-b border-white/20">
+                        <button onclick="selectAvatarCategory('skin')" id="cat-btn-skin" class="avatar-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold bg-indigo-600 text-white">
+                            🎨 Piel
+                        </button>
+                        <button onclick="selectAvatarCategory('hair')" id="cat-btn-hair" class="avatar-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold ios-glass-strong">
+                            💇 Cabello
+                        </button>
+                        <button onclick="selectAvatarCategory('hat')" id="cat-btn-hat" class="avatar-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold ios-glass-strong">
+                            🧢 Cachuchas
+                        </button>
+                        <button onclick="selectAvatarCategory('glasses')" id="cat-btn-glasses" class="avatar-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold ios-glass-strong">
+                            🕶️ Lentes
+                        </button>
+                        <button onclick="selectAvatarCategory('shirt')" id="cat-btn-shirt" class="avatar-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold ios-glass-strong">
+                            👕 Playeras
+                        </button>
+                        <button onclick="selectAvatarCategory('backpack')" id="cat-btn-backpack" class="avatar-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold ios-glass-strong">
+                            🎒 Mochilas
+                        </button>
+                        <button onclick="selectAvatarCategory('shoes')" id="cat-btn-shoes" class="avatar-cat-btn px-3 py-1.5 rounded-xl text-xs font-bold ios-glass-strong">
+                            👟 Tenis y Huaraches
+                        </button>
+                    </div>
+
+                    <!-- Selector adicional de color de cabello (solo visible en categoría Cabello) -->
+                    <div id="hair-color-picker-bar" class="hidden mb-4 p-3 rounded-2xl ios-glass-strong flex items-center justify-between gap-2 flex-wrap">
+                        <span class="text-xs font-bold">Color de cabello:</span>
+                        <div id="hair-color-swatches" class="flex items-center gap-2"></div>
+                    </div>
+
+                    <!-- Cuadrícula de Ítems de la Categoría Activa -->
+                    <div id="avatar-items-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-3 max-h-[380px] overflow-y-auto pr-1">
+                        <!-- Renderizado dinámicamente -->
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-3 border-t border-white/20 flex items-center justify-between text-xs opacity-80">
+                    <span>✨ Todos los artículos comprados quedan guardados en tu cuenta.</span>
+                    <button onclick="switchMainTab('daily')" class="underline font-bold text-amber-300 hover:text-amber-200">
+                        ¿Necesitas más monedas? Ir al Reto Diario ➔
+                    </button>
+                </div>
             </div>
-        </div>
+        </section>
+
+        <!-- ======================================================================
+             VISTA 4: APARTADO DE REPASO DE PREGUNTAS FALLADAS (Principio #5 y #7)
+             ====================================================================== -->
+        <section id="view-mistakes" class="w-full max-w-4xl hidden flex-col gap-4 animate-pop-in">
+            <div class="ios-glass rounded-[32px] p-6 sm:p-8">
+                <div class="flex flex-wrap items-center justify-between gap-4 mb-6">
+                    <div>
+                        <span class="inline-flex items-center gap-1.5 text-xs font-extrabold uppercase tracking-wider px-3 py-1 rounded-full bg-rose-500/20 text-rose-300 border border-rose-400/30 mb-2">
+                            🔄 Aprendizaje Activo • Cero Frustración
+                        </span>
+                        <h2 class="font-display text-2xl sm:text-3xl font-bold">
+                            Cuaderno de Repaso de Errores
+                        </h2>
+                        <p class="text-xs sm:text-sm opacity-80 mt-1">
+                            Aquí se guardan automáticamente los ejercicios en los que te has equivocado. Repásalos con su fórmula y ejemplo; al resolverlos bien ganarás <strong>+15 🪙</strong> y se marcarán como dominados.
+                        </p>
+                    </div>
+                    <button onclick="openFormulaModal('all')" class="ios-glass-strong px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm ios-btn flex items-center gap-2">
+                        <span>📐</span>
+                        <span>Abrir Formulario General</span>
+                    </button>
+                </div>
+
+                <!-- Lista de preguntas falladas -->
+                <div id="mistakes-list-container" class="space-y-3">
+                    <!-- Generado dinámicamente por JS -->
+                </div>
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             VISTA 5: PANTALLA ACTIVA DE RESOLUCIÓN DE EJERCICIOS / MINI EXAMEN / RETO DIARIO
+             ====================================================================== -->
+        <section id="view-quiz" class="w-full max-w-3xl ios-glass rounded-[32px] p-5 sm:p-8 hidden animate-pop-in">
+            <!-- Encabezado de la sesión -->
+            <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+                <button onclick="exitQuizToPreviousView()" class="ios-glass-strong px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-1.5 ios-btn">
+                    <span>⬅️</span>
+                    <span>Salir</span>
+                </button>
+
+                <!-- Barra de Progreso y Modo Activo -->
+                <div class="flex-1 max-w-xs mx-auto">
+                    <div class="flex justify-between items-center text-xs font-bold mb-1 px-1">
+                        <span id="quiz-mode-title" class="text-sky-400 truncate">1° Primaria</span>
+                        <span id="quiz-counter-text">1 de 5</span>
+                    </div>
+                    <div class="w-full h-3 bg-slate-900/25 dark:bg-white/15 rounded-full overflow-hidden p-0.5">
+                        <div id="quiz-progress-bar" class="h-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-full transition-all duration-500" style="width: 20%"></div>
+                    </div>
+                </div>
+
+                <!-- Botón de saltar si es práctica -->
+                <button id="skip-question-btn" onclick="skipCurrentQuestion()" class="ios-glass-strong px-3.5 py-2 rounded-2xl text-xs sm:text-sm font-bold flex items-center gap-1.5 ios-btn" title="Generar otra variante del problema">
+                    <span>🔄</span>
+                    <span class="hidden sm:inline">Otra pregunta</span>
+                </button>
+            </div>
+
+            <!-- Barra de Herramientas Pedagógicas: FORMULARIO y EJEMPLO (Requerimiento clave) -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mb-4 p-2.5 rounded-2xl ios-glass-strong">
+                <div class="flex items-center gap-2">
+                    <div id="quiz-mini-avatar" class="w-8 h-8 rounded-full bg-slate-800/50 overflow-hidden shrink-0"></div>
+                    <span id="quiz-topic-badge" class="text-xs font-extrabold uppercase tracking-wider px-2.5 py-1 rounded-lg bg-indigo-500/20 text-indigo-300">
+                        🧮 Tema
+                    </span>
+                </div>
+
+                <div class="flex items-center gap-2">
+                    <button onclick="openFormulaModal('current')" class="bg-gradient-to-r from-sky-500 to-indigo-600 text-white px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold ios-btn flex items-center gap-1.5 shadow">
+                        <span>📐</span>
+                        <span>Formulario</span>
+                    </button>
+                    <button onclick="openExampleModal()" class="bg-gradient-to-r from-purple-500 to-pink-600 text-white px-3.5 py-1.5 rounded-xl text-xs sm:text-sm font-bold ios-btn flex items-center gap-1.5 shadow">
+                        <span>📘</span>
+                        <span>Ejemplo</span>
+                    </button>
+                    <button id="hint-toggle-btn" onclick="toggleHintDrawer()" class="bg-amber-400 text-slate-950 px-3 py-1.5 rounded-xl text-xs sm:text-sm font-bold ios-btn flex items-center gap-1">
+                        <span>💡</span>
+                        <span id="hint-btn-label">Pista</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Tarjeta Principal del Problema Matemático -->
+            <div class="ios-glass-strong rounded-3xl p-5 sm:p-7 text-center relative mb-4">
+                <p id="problem-context" class="text-sm sm:text-base font-medium opacity-90 mb-3 max-w-xl mx-auto">
+                    Resuelve el siguiente planteamiento matemático:
+                </p>
+
+                <!-- Contenedor de la Ecuación o Expresión Matricial/Cálculo -->
+                <div class="py-4 px-5 rounded-2xl bg-white/60 dark:bg-slate-900/55 border border-white/60 dark:border-white/15 inline-block min-w-[250px] sm:min-w-[340px] max-w-full overflow-x-auto">
+                    <div id="equation-display" class="font-display text-3xl sm:text-5xl font-bold tracking-wide text-slate-900 dark:text-white flex items-center justify-center flex-wrap gap-2">
+                        5 + 3 = ?
+                    </div>
+                </div>
+
+                <!-- Apoyo visual o recordatorio rápido -->
+                <div id="visual-aid-box" class="mt-3 text-xs sm:text-sm font-semibold opacity-80 min-h-[22px] flex items-center justify-center flex-wrap gap-2"></div>
+            </div>
+
+            <!-- Banner de Retroalimentación Inmediata -->
+            <div id="feedback-banner" class="min-h-[46px] rounded-2xl px-4 py-2.5 mb-4 flex items-center justify-between gap-3 transition-all duration-300 ios-glass">
+                <div class="flex items-center gap-2.5 text-xs sm:text-sm font-bold">
+                    <span id="feedback-icon" class="text-lg">👆</span>
+                    <span id="feedback-text">Selecciona la respuesta correcta o usa las teclas 1 a 4.</span>
+                </div>
+                <span id="quiz-reward-preview" class="text-xs font-extrabold text-amber-400 shrink-0">+10 ⭐</span>
+            </div>
+
+            <!-- Cajón Desplegable de Pista (Divulgación Progresiva) -->
+            <div id="hint-drawer" class="hidden mb-4 rounded-2xl p-4 bg-amber-500/15 border border-amber-400/50 text-xs sm:text-sm animate-pop-in">
+                <div class="flex items-start gap-2.5">
+                    <span class="text-xl">💡</span>
+                    <div>
+                        <h4 class="font-bold text-amber-400 mb-0.5">Pista paso a paso:</h4>
+                        <p id="hint-content" class="leading-relaxed opacity-95"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Opciones de Respuesta (4 botones) -->
+            <div id="options-container" class="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <!-- Botones generados dinámicamente -->
+            </div>
+        </section>
+
+        <!-- ======================================================================
+             VISTA 6: RESUMEN DE MISIÓN / MINI EXAMEN / RETO DIARIO COMPLETADO
+             ====================================================================== -->
+        <section id="view-summary" class="w-full max-w-lg ios-glass rounded-[32px] p-6 sm:p-8 text-center hidden animate-pop-in">
+            <div id="summary-trophy-icon" class="w-20 h-20 rounded-3xl ios-glass-strong mx-auto flex items-center justify-center text-5xl mb-3 shadow-md animate-bounce-short">
+                🏆
+            </div>
+            <span id="summary-mode-pill" class="inline-block text-xs font-extrabold uppercase tracking-wider px-3.5 py-1 rounded-full bg-emerald-500/20 text-emerald-300 mb-2">
+                Sesión Completada
+            </span>
+            <h2 id="summary-title" class="font-display text-3xl sm:text-4xl font-bold mb-2">
+                ¡Excelente trabajo!
+            </h2>
+            <p id="summary-subtitle" class="text-sm sm:text-base opacity-85 mb-5">
+                Has completado la serie de ejercicios.
+            </p>
+
+            <!-- Tarjetas de Recompensas Ganadas -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <div class="ios-glass-strong p-3.5 rounded-2xl">
+                    <span class="text-[11px] font-bold uppercase opacity-70 block">Monedas</span>
+                    <span id="summary-coins" class="font-display text-xl sm:text-2xl text-amber-400 font-bold">+50 🪙</span>
+                </div>
+                <div class="ios-glass-strong p-3.5 rounded-2xl">
+                    <span class="text-[11px] font-bold uppercase opacity-70 block">Puntos XP</span>
+                    <span id="summary-xp" class="font-display text-xl sm:text-2xl text-sky-400 font-bold">+100 ⭐</span>
+                </div>
+                <div class="ios-glass-strong p-3.5 rounded-2xl">
+                    <span class="text-[11px] font-bold uppercase opacity-70 block">Aciertos</span>
+                    <span id="summary-accuracy" class="font-display text-xl sm:text-2xl text-emerald-400 font-bold">5/5</span>
+                </div>
+            </div>
+
+            <div class="flex flex-col sm:flex-row gap-3">
+                <button id="summary-primary-btn" onclick="switchMainTab('grades')" class="flex-1 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-display text-base py-3.5 px-5 rounded-2xl ios-btn shadow-lg">
+                    📚 Volver a Grados
+                </button>
+                <button onclick="switchMainTab('avatar')" class="flex-1 ios-glass-strong font-display text-base py-3.5 px-5 rounded-2xl ios-btn">
+                    🎨 Ir a Tienda de Avatar
+                </button>
+            </div>
+        </section>
+
     </main>
 
-    <footer class="w-full max-w-2xl mt-8 text-center bg-white p-4 rounded-xl shadow-sm border-2 border-gray-200">
-        <h3 class="text-sm font-bold text-gray-500 uppercase tracking-wider mb-2">Desarrollado por el Equipo:</h3>
-        <div class="flex flex-wrap justify-center gap-4 text-sm md:text-base">
-            <div class="bg-purple-100 text-purple-800 px-3 py-1 rounded-lg font-semibold">
-                💻 Front-End: <span class="font-normal">Daniel Emanuel Saucedo</span>
+    <!-- ==========================================================================
+         PIE DE PÁGINA LIMPIO (Sin nombres de desarrolladores)
+         ========================================================================== -->
+    <footer class="w-full max-w-6xl z-10 mt-3">
+        <div class="ios-glass rounded-2xl px-4 py-3 flex flex-wrap items-center justify-between gap-2 text-xs">
+            <div class="flex items-center gap-2 font-medium opacity-85">
+                <span>🇲🇽</span>
+                <span><strong>MateAventuras Pro</strong> • Plataforma Interactiva de 1° de Primaria a 3° de Preparatoria</span>
             </div>
-            <div class="bg-blue-100 text-blue-800 px-3 py-1 rounded-lg font-semibold">
-                ⚙️ Back-End: <span class="font-normal">Dana Laura Zuazo</span>
-            </div>
-            <div class="bg-green-100 text-green-800 px-3 py-1 rounded-lg font-semibold">
-                ⚙️ Back-End: <span class="font-normal">Oswaldo Rojas Ortis</span>
+            <div class="flex items-center gap-4">
+                <button onclick="openFormulaModal('all')" class="underline font-bold hover:text-sky-400 transition-colors">
+                    📐 Formulario General
+                </button>
+                <button onclick="toggleUxModal(true)" class="underline font-bold hover:text-pink-400 transition-colors">
+                    ✨ 12 Principios UX/UI
+                </button>
             </div>
         </div>
     </footer>
 
-    <script>
-        // Variables de Estado
-        let score = 0;
-        let streak = 0;
-        let currentAnswer = 0;
-        let isProcessing = false;
+    <!-- ==========================================================================
+         MODAL 1: FORMULARIO MATEMÁTICO (PRIMARIA A PREPARATORIA)
+         ========================================================================== -->
+    <div id="formula-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="ios-glass-strong w-full max-w-2xl rounded-[32px] p-6 sm:p-7 max-h-[86vh] flex flex-col animate-pop-in">
+            <div class="flex items-center justify-between gap-4 pb-3 border-b border-white/20">
+                <div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-sky-400">Referencia Académica</span>
+                    <h3 class="font-display text-2xl font-bold">📐 Formulario Matemático</h3>
+                </div>
+                <button onclick="closeFormulaModal()" class="ios-glass w-9 h-9 rounded-full flex items-center justify-center font-bold ios-btn">✕</button>
+            </div>
 
-        // Elementos del DOM
-        const startScreen = document.getElementById('start-screen');
-        const gameScreen = document.getElementById('game-screen');
-        const equationDisplay = document.getElementById('equation');
-        const optionsContainer = document.getElementById('options-container');
-        const scoreDisplay = document.getElementById('score-display');
-        const streakDisplay = document.getElementById('streak-display');
-        const feedbackMessage = document.getElementById('feedback-message');
-        const confettiContainer = document.getElementById('confetti-container');
+            <div id="formula-modal-body" class="overflow-y-auto py-4 space-y-3 text-xs sm:text-sm pr-1">
+                <!-- Se inyecta la fórmula del problema actual + catálogo completo -->
+            </div>
 
-        // Paleta de colores para los botones
-        const buttonColors = [
-            'bg-rosa-mexicano',
-            'bg-talavera',
-            'bg-cempasuchil',
-            'bg-orange-500'
-        ];
+            <div class="pt-3 border-t border-white/20 flex justify-end">
+                <button onclick="closeFormulaModal()" class="bg-gradient-to-r from-sky-500 to-indigo-600 text-white font-bold px-6 py-2.5 rounded-2xl ios-btn">
+                    Cerrar Formulario
+                </button>
+            </div>
+        </div>
+    </div>
 
-        function startGame() {
-            startScreen.classList.add('hidden');
-            gameScreen.classList.remove('hidden');
-            score = 0;
-            streak = 0;
-            updateScoreboard();
-            generateProblem();
-        }
+    <!-- ==========================================================================
+         MODAL 2: EJEMPLO RESUELTO PASO A PASO
+         ========================================================================== -->
+    <div id="example-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="ios-glass-strong w-full max-w-xl rounded-[32px] p-6 sm:p-7 max-h-[85vh] flex flex-col animate-pop-in">
+            <div class="flex items-center justify-between gap-4 pb-3 border-b border-white/20">
+                <div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-pink-400">Aprendizaje Guiado</span>
+                    <h3 class="font-display text-2xl font-bold">📘 Ejemplo Resuelto Paso a Paso</h3>
+                </div>
+                <button onclick="closeExampleModal()" class="ios-glass w-9 h-9 rounded-full flex items-center justify-center font-bold ios-btn">✕</button>
+            </div>
 
-        function generateProblem() {
-            isProcessing = false;
-            // Generar números (Nivel básico: 1 a 15)
-            let num1 = Math.floor(Math.random() * 15) + 1;
-            let num2 = Math.floor(Math.random() * 10) + 1;
-            
-            // 50% probabilidad de suma o resta
-            const isAddition = Math.random() > 0.5;
+            <div id="example-modal-body" class="overflow-y-auto py-4 space-y-3 text-sm pr-1">
+                <!-- Se inyecta dinámicamente según el problema actual -->
+            </div>
 
-            if (!isAddition) {
-                // Evitar resultados negativos en nivel básico
-                if (num1 < num2) {
-                    let temp = num1;
-                    num1 = num2;
-                    num2 = temp;
-                }
-                currentAnswer = num1 - num2;
-                equationDisplay.innerText = `${num1} - ${num2} = ?`;
-            } else {
-                currentAnswer = num1 + num2;
-                equationDisplay.innerText = `${num1} + ${num2} = ?`;
-            }
+            <div class="pt-3 border-t border-white/20 flex justify-end">
+                <button onclick="closeExampleModal()" class="bg-gradient-to-r from-purple-500 to-pink-600 text-white font-bold px-6 py-2.5 rounded-2xl ios-btn">
+                    ¡Entendido, volver al reto!
+                </button>
+            </div>
+        </div>
+    </div>
 
-            generateOptions();
-        }
+    <!-- ==========================================================================
+         MODAL 3: LOGIN Y GESTIÓN DE CUENTA / PERFIL CON AVATAR
+         ========================================================================== -->
+    <div id="auth-modal" class="fixed inset-0 z-50 bg-slate-950/65 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="ios-glass-strong w-full max-w-md rounded-[32px] p-6 sm:p-7 animate-pop-in">
+            <div class="flex items-center justify-between pb-3 border-b border-white/20 mb-4">
+                <div>
+                    <span class="text-xs font-extrabold uppercase tracking-wider text-indigo-400">Sincronización Cloud</span>
+                    <h3 class="font-display text-2xl font-bold">👤 Tu Cuenta y Avatar</h3>
+                </div>
+                <button onclick="closeAuthModal()" class="ios-glass w-9 h-9 rounded-full flex items-center justify-center font-bold ios-btn">✕</button>
+            </div>
 
-        function generateOptions() {
-            // Generar 3 respuestas incorrectas cercanas a la correcta
-            let options = [currentAnswer];
-            
-            while (options.length < 4) {
-                // Generar variación aleatoria entre -3 y +3
-                let offset = Math.floor(Math.random() * 7) - 3;
-                let wrongAnswer = currentAnswer + offset;
-                
-                // Asegurar que no sea negativo ni igual a la correcta ni repetido
-                if (wrongAnswer >= 0 && wrongAnswer !== currentAnswer && !options.includes(wrongAnswer)) {
-                    options.push(wrongAnswer);
-                }
-            }
+            <div class="flex items-center gap-4 p-3.5 rounded-2xl ios-glass mb-4">
+                <div id="auth-modal-avatar" class="w-16 h-20 rounded-2xl ios-glass-strong p-1 shrink-0"></div>
+                <div class="flex-1 min-w-0">
+                    <p class="text-xs opacity-75">Perfil activo:</p>
+                    <h4 id="auth-current-user-title" class="font-display text-lg font-bold truncate">Estudiante</h4>
+                    <p class="text-xs text-amber-400 font-bold mt-0.5">
+                        🪙 <span id="auth-modal-coins">120</span> monedas • ⭐ <span id="auth-modal-xp">0</span> XP
+                    </p>
+                </div>
+            </div>
 
-            // Mezclar opciones (Fisher-Yates Shuffle)
-            for (let i = options.length - 1; i > 0; i--) {
-                const j = Math.floor(Math.random() * (i + 1));
-                [options[i], options[j]] = [options[j], options[i]];
-            }
+            <div class="space-y-3 text-xs sm:text-sm">
+                <div>
+                    <label class="font-bold block mb-1">Nombre o Apodo del Estudiante:</label>
+                    <input id="auth-nickname-input" type="text" maxlength="22" placeholder="Ej. AlexPro99" class="w-full px-3.5 py-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-white/30 text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="font-bold block mb-1">Correo o Usuario (para guardar tu progreso):</label>
+                    <input id="auth-email-input" type="email" placeholder="estudiante@escuela.mx" class="w-full px-3.5 py-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-white/30 text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <div>
+                    <label class="font-bold block mb-1">Contraseña (mínimo 6 caracteres):</label>
+                    <input id="auth-pass-input" type="password" placeholder="••••••" class="w-full px-3.5 py-2.5 rounded-xl bg-white/80 dark:bg-slate-900/80 border border-white/30 text-slate-900 dark:text-white font-semibold focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                </div>
+                <p id="auth-feedback-msg" class="text-xs font-bold text-amber-400 min-h-[18px]"></p>
+            </div>
 
-            // Renderizar botones
-            optionsContainer.innerHTML = '';
-            options.forEach((opt, index) => {
-                const btn = document.createElement('button');
-                // Asignar colores diferentes pero consistentes
-                const colorClass = buttonColors[index % buttonColors.length];
-                
-                btn.className = `${colorClass} text-white font-kids text-4xl py-6 rounded-2xl btn-answer w-full`;
-                btn.innerText = opt;
-                btn.onclick = () => checkAnswer(opt, btn);
-                optionsContainer.appendChild(btn);
-            });
-        }
+            <div class="flex flex-col gap-2.5 mt-4">
+                <button onclick="handleUserLoginOrRegister()" class="w-full py-3 rounded-2xl font-display font-bold text-base bg-gradient-to-r from-indigo-500 to-purple-600 text-white ios-btn shadow-lg">
+                    🔐 Guardar / Iniciar Sesión con Cuenta
+                </button>
+                <button onclick="handleQuickNicknameUpdate()" class="w-full py-2.5 rounded-2xl font-bold text-xs sm:text-sm ios-glass ios-btn">
+                    ⚡ Actualizar solo Apodo en este dispositivo
+                </button>
+            </div>
+        </div>
+    </div>
 
-        function checkAnswer(selected, btnElement) {
-            if (isProcessing) return; // Evitar multiples clics
-            isProcessing = true;
+    <!-- ==========================================================================
+         MODAL 4: LOS 12 PRINCIPIOS UX/UI
+         ========================================================================== -->
+    <div id="ux-modal" class="fixed inset-0 z-50 bg-slate-950/60 backdrop-blur-md hidden items-center justify-center p-4">
+        <div class="ios-glass-strong w-full max-w-2xl rounded-[32px] p-6 sm:p-7 max-h-[85vh] flex flex-col animate-pop-in">
+            <div class="flex items-center justify-between pb-3 border-b border-white/20">
+                <h3 class="font-display text-2xl font-bold">✨ Los 12 Principios UX/UI Aplicados</h3>
+                <button onclick="toggleUxModal(false)" class="ios-glass w-9 h-9 rounded-full flex items-center justify-center font-bold ios-btn">✕</button>
+            </div>
+            <div class="overflow-y-auto py-4 grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+                <div class="ios-glass p-3 rounded-2xl"><strong>1. No me hagas pensar:</strong> Pestañas directas para Grados, Reto Diario, Avatar y Repaso.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>2. Coherencia y estándares:</strong> Diseño Cristal iOS 16 unificado en todos los niveles.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>3. Bucles de retroalimentación:</strong> Sonidos, confeti, monedas y puntos en vivo.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>4. Objetivos claros:</strong> Prácticas de 5 retos y Mini Examen Final por cada grado.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>5. Empatía hacia el usuario:</strong> Botones de Formulario y Ejemplo siempre accesibles.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>6. Sencillez y claridad:</strong> Ecuaciones y matrices limpias de alto contraste.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>7. Prevención de errores:</strong> Desactivación de opciones ya falladas y cuaderno de repaso.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>8. Visibilidad del estado:</strong> Dynamic Island con monedas, puntos, racha y perfil activo.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>9. Control y libertad:</strong> Elección libre de dificultad en Reto Diario y temas visuales.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>10. Posibilidades y significantes:</strong> Botones táctiles con relieve y atajos de teclado (1-4).</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>11. Consistencia multi-dispositivo:</strong> Adaptable a móvil, tablet y escritorio.</div>
+                <div class="ios-glass p-3 rounded-2xl"><strong>12. Divulgación progresiva:</strong> Fórmulas, ejemplos y pistas bajo demanda.</div>
+            </div>
+        </div>
+    </div>
 
-            if (selected === currentAnswer) {
-                // Respuesta Correcta
-                score += 10;
-                streak++;
-                btnElement.classList.add('bg-agave'); // Cambiar a verde
-                btnElement.classList.remove(...buttonColors);
-                
-                showFeedback(true);
-                createConfetti();
-                updateScoreboard();
-
-                // Siguiente pregunta con retraso
-                setTimeout(() => {
-                    generateProblem();
-                }, 1500);
-
-            } else {
-                // Respuesta Incorrecta
-                streak = 0;
-                btnElement.classList.add('animate-shake', 'opacity-50');
-                
-                showFeedback(false);
-                updateScoreboard();
-
-                // Permitir intentar de nuevo después de la animación
-                setTimeout(() => {
-                    btnElement.classList.remove('animate-shake');
-                    isProcessing = false;
-                }, 800);
-            }
-        }
-
-        function showFeedback(isCorrect) {
-            feedbackMessage.style.opacity = '1';
-            
-            if (isCorrect) {
-                const praises = ['¡Órale, muy bien! 🎉', '¡Excelente! ⭐', '¡Qué inteligente! 🌮', '¡Súper! 🚀'];
-                const randomPraise = praises[Math.floor(Math.random() * praises.length)];
-                feedbackMessage.innerText = randomPraise;
-                feedbackMessage.className = 'h-10 text-xl md:text-2xl font-kids text-agave mb-4 transition-opacity duration-300';
-            } else {
-                feedbackMessage.innerText = '¡Uy! Intenta de nuevo 🌵';
-                feedbackMessage.className = 'h-10 text-xl md:text-2xl font-kids text-red-500 mb-4 transition-opacity duration-300';
-            }
-
-            if(isCorrect){
-                setTimeout(() => {
-                    feedbackMessage.style.opacity = '0';
-                }, 1200);
-            }
-        }
-
-        function updateScoreboard() {
-            scoreDisplay.innerText = score;
-            streakDisplay.innerText = streak;
-            
-            // Animación de puntaje
-            scoreDisplay.classList.remove('animate-bounce-short');
-            void scoreDisplay.offsetWidth; // Trigger reflow
-            scoreDisplay.classList.add('animate-bounce-short');
-        }
-
-        function createConfetti() {
-            const colors = ['#E4007C', '#004B87', '#FFD700', '#4B8B3B', '#FFFFFF'];
-            
-            for (let i = 0; i < 30; i++) {
-                let confetti = document.createElement('div');
-                confetti.className = 'confetti-piece';
-                
-                // Estilos aleatorios
-                confetti.style.left = Math.random() * 100 + 'vw';
-                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
-                confetti.style.animation = `fall ${Math.random() * 1 + 1}s linear forwards`;
-                
-                // Formas aleatorias (cuadrados y círculos)
-                if(Math.random() > 0.5) {
-                    confetti.style.borderRadius = '50%';
-                }
-
-                confettiContainer.appendChild(confetti);
-
-                // Limpiar DOM después de la animación
-                setTimeout(() => {
-                    confetti.remove();
-                }, 2000);
-            }
-        }
-    </script>
+    <!-- ==========================================================================
+         LÓGICA PRINCIPAL + FIREBASE + GENERADOR MATEMÁTICO (1° PRIMARIA A PREPA)
+         ========================================================================== -->
+    <script type="module" src="./src/main.js"></script>
 </body>
 </html>

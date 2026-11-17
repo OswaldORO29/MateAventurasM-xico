@@ -1,8 +1,51 @@
 # MateAventuras Mexico
 
-MateAventuras Mexico is a playful web platform that helps children in Mexico learn and practice basic mathematics. Children can solve addition and subtraction problems, earn points, and build a streak while learning with Loti the Axolotl.
+MateAventuras Mexico is a playful web platform that helps students in Mexico practice mathematics from primary school through preparatory school. Students solve grade-based exercises and daily challenges, earn points, build streaks, and customize an avatar while learning with Loti the Axolotl.
 
-The project provides a colorful, child-friendly experience and currently runs directly in a web browser.
+The project provides a colorful, child-friendly experience with a customizable avatar, daily challenges, review exercises, and optional Firebase profile synchronization.
+
+## Project structure
+
+```text
+.
+├── index.html
+└── src/
+    ├── components/
+    │   ├── avatar.js
+    │   └── avatarCustomizer.js
+    ├── controllers/
+    │   └── quizController.js
+    ├── models/
+    │   ├── appState.js
+    │   ├── avatarCatalog.js
+    │   └── curriculum.js
+    ├── services/
+    │   └── firebaseProfile.js
+    ├── styles/
+    │   └── main.css
+    ├── utils/
+    │   └── math.js
+    └── main.js
+```
+
+- `index.html` contains the semantic application markup and loads the app entry point.
+- `src/main.js` wires the app modules and browser interactions together.
+- `src/components/` contains reusable avatar rendering and customization behavior.
+- `src/controllers/` contains the quiz flow and review-session behavior.
+- `src/services/` isolates Firebase authentication and profile persistence from the UI.
+- `src/utils/` contains the problem generator and other pure math helpers.
+- `src/models/` defines the app state, avatar catalog, and grade curriculum.
+- `src/styles/` contains the application stylesheet. Static assets can be added in `public/` when needed.
+
+## Run locally
+
+Serve the repository over HTTP so the browser can load ES modules:
+
+```bash
+python -m http.server 8000
+```
+
+Then open `http://localhost:8000`. The app remains usable for the current session without Firebase configuration; cloud authentication and profile sync activate when the hosting environment provides Firebase configuration.
 
 ## Team
 
